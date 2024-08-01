@@ -1,11 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React, { useEffect } from 'react'
-import { Slot, SplashScreen, Stack } from 'expo-router'
-import {useFonts} from 'expo-font'
+import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
+import React, { useEffect } from 'react';
+import { Slot, SplashScreen, Stack } from 'expo-router';
+import { useFonts } from 'expo-font';
+
 SplashScreen.preventAutoHideAsync();
 
 const RootLayout = () => {
-  const [fontLoaded, error] = useFonts({
+  const [fontsLoaded, error] = useFonts({
     "Poppins-Black": require("../assets/fonts/Poppins-Black.ttf"),
     "Poppins-Bold": require("../assets/fonts/Poppins-Bold.ttf"),
     "Poppins-ExtraBold": require("../assets/fonts/Poppins-ExtraBold.ttf"),
@@ -15,19 +16,37 @@ const RootLayout = () => {
     "Poppins-Regular": require("../assets/fonts/Poppins-Regular.ttf"),
     "Poppins-SemiBold": require("../assets/fonts/Poppins-SemiBold.ttf"),
     "Poppins-Thin": require("../assets/fonts/Poppins-Thin.ttf"),
-  })
+  });
 
   useEffect(() => {
-    if(error) throw error;
-    if(fontLoaded) SplashScreen.hideAsync()
-  }, [fontLoaded, error])
-if(!fontLoaded && !error) return null
+    if (error) {
+      console.error("Error loading fonts: ", error);
+    } else if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, error]);
+
+  if (!fontsLoaded) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#0000ff" />
+      </View>
+    );
+  }
 
   return (
     <Stack>
-      <Stack.Screen name='index' options={{headerShown: false}}  />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
-  )
-}
+  );
+};
 
-export default RootLayout
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+
+export default RootLayout;
